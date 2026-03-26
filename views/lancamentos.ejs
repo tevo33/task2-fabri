@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lista de Lancamentos</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="header">
+        <div>
+          <p class="eyebrow">Task 2</p>
+          <h1>Registro de despesas e receitas</h1>
+          <p class="subtitle">Listagem simples dos lancamentos cadastrados.</p>
+        </div>
+      </header>
+
+      <% if (error) { %>
+        <section class="alert">
+          <strong>Erro:</strong> <%= error %>
+        </section>
+      <% } %>
+
+      <section class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Descricao</th>
+              <th>Data</th>
+              <th>Valor</th>
+              <th>Tipo</th>
+              <th>Situacao</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (lancamentos.length === 0) { %>
+              <tr>
+                <td colspan="6" class="empty">Nenhum lancamento encontrado.</td>
+              </tr>
+            <% } %>
+
+            <% lancamentos.forEach((lancamento) => { %>
+              <tr>
+                <td><%= lancamento.id %></td>
+                <td><%= lancamento.descricao %></td>
+                <td><%= new Date(lancamento.data_lancamento).toLocaleDateString('pt-BR') %></td>
+                <td>
+                  <%= Number(lancamento.valor).toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                  }) %>
+                </td>
+                <td><span class="tag"><%= lancamento.tipo_lancamento %></span></td>
+                <td><%= lancamento.situacao %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </body>
+</html>
