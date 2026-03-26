@@ -36,6 +36,11 @@ body {
   gap: 16px;
 }
 
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
 .eyebrow {
   margin: 0 0 8px;
   font-size: 0.85rem;
@@ -76,10 +81,27 @@ h1 {
   padding: 20px;
 }
 
+.login-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 480px;
+  padding: 24px;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+}
+
+.form-grid-single {
+  grid-template-columns: 1fr;
 }
 
 label {
@@ -186,6 +208,7 @@ tbody tr:hover {
   }
 
   .header-row,
+  .header-actions,
   .form-grid,
   .actions,
   .table-actions {

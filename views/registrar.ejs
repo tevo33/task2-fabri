@@ -14,7 +14,12 @@
           <h1>Registrar despesa</h1>
           <p class="subtitle">Cadastro simples para incluir, editar e excluir despesas.</p>
         </div>
-        <a class="button button-secondary" href="/">Voltar para home</a>
+        <div class="header-actions">
+          <a class="button button-secondary" href="/">Voltar para home</a>
+          <form method="post" action="/logout">
+            <button class="button button-secondary" type="submit">Sair</button>
+          </form>
+        </div>
       </header>
 
       <% if (error) { %>

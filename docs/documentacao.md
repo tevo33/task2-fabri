@@ -39,6 +39,7 @@
 
 ### Interface desenvolvida
 
+- Tela `/login` para autenticacao com usuario e senha cadastrados no banco
 - Tela web unica para listagem dos lancamentos cadastrados
 - Exibicao de descricao, data, valor, tipo e situacao
 - Tela `/registrar` para cadastrar, editar e excluir despesas
@@ -111,6 +112,7 @@ sudo systemctl status task2-fabri.service
 
 ### URL de acesso
 
+- Login: `http://177.44.248.58:3000/login`
 - Aplicacao: `http://177.44.248.58:3000/`
 - Credenciais cadastradas no banco: login `admin` / senha `123456`
 

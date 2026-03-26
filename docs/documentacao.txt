@@ -1,0 +1,105 @@
+Documentacao - Task 2
+
+1. Aplicacao
+
+Tecnologias utilizadas
+- Node.js
+- Express
+- PostgreSQL
+- EJS
+
+Numero de classes da aplicacao
+- 0 classes
+- Estrutura baseada em modulos simples para manter o projeto enxuto
+
+Modelagem do banco de dados
+
+Tabela usuario
+- id | SERIAL | Chave primaria
+- nome | VARCHAR(120) | Obrigatorio
+- login | VARCHAR(80) | Obrigatorio e unico
+- senha | VARCHAR(120) | Obrigatorio
+- situacao | VARCHAR(20) | Obrigatorio
+
+Tabela lancamento
+- id | SERIAL | Chave primaria
+- descricao | VARCHAR(150) | Obrigatorio
+- data_lancamento | DATE | Obrigatorio
+- valor | NUMERIC(10,2) | Obrigatorio
+- tipo_lancamento | VARCHAR(20) | Obrigatorio
+- situacao | VARCHAR(20) | Obrigatorio
+
+Interface desenvolvida
+- Tela /login para autenticacao com usuario e senha cadastrados no banco
+- Tela web unica para listagem dos lancamentos cadastrados
+- Exibicao de descricao, data, valor, tipo e situacao
+- Tela /registrar para cadastrar, editar e excluir despesas
+- Layout simples e funcional
+
+2. Publicacao
+
+Como acessar a VM
+- ssh univates@177.44.248.58
+- Senha utilizada: uni415
+
+Instalacao de cada ferramenta
+- Sistema operacional: Ubuntu 24.04.4 LTS
+- Node.js ja instalado: v18.20.8
+- npm ja instalado: 10.8.2
+- PostgreSQL ja instalado e ativo: 16.13
+- Dependencias do projeto instaladas com npm install --omit=dev
+- Porta liberada no firewall: 3000/tcp
+
+Comandos utilizados
+- cd /home/univates/task2-fabri
+- npm install --omit=dev
+- sudo -u postgres createdb -O financeiro_app financeiro_db
+- PGPASSWORD='financeiro123' psql -h 127.0.0.1 -U financeiro_app -d financeiro_db -f sql/schema.sql
+- PGPASSWORD='financeiro123' psql -h 127.0.0.1 -U financeiro_app -d financeiro_db -f sql/seed.sql
+- sudo ufw allow 3000/tcp
+
+Implantacao da aplicacao
+- Arquivos enviados para /home/univates/task2-fabri
+- Arquivo .env criado com acesso ao banco PostgreSQL da propria VM
+- Banco financeiro_db criado
+- Usuario do banco financeiro_app criado
+- Script sql/schema.sql executado
+- Script sql/seed.sql executado
+- Servico systemd criado com nome task2-fabri.service
+- Aplicacao publicada na porta 3000
+
+Observacao
+- A primeira publicacao na VM foi feita por envio direto dos arquivos para a pasta do projeto
+- O repositorio GitHub foi publicado depois, em separado
+
+Comandos principais do servico
+- sudo systemctl daemon-reload
+- sudo systemctl enable --now task2-fabri.service
+- sudo systemctl restart task2-fabri.service
+- sudo systemctl status task2-fabri.service
+
+URL de acesso
+- Login: http://177.44.248.58:3000/login
+- Aplicacao: http://177.44.248.58:3000/
+- Credenciais cadastradas no banco: login admin / senha 123456
+
+Acesso ao PostgreSQL pela VM
+- sudo -u postgres psql
+- psql -h 127.0.0.1 -U financeiro_app -d financeiro_db
+- PGPASSWORD='financeiro123' psql -h 127.0.0.1 -U financeiro_app -d financeiro_db
+
+Consultas basicas
+- \dt
+- SELECT * FROM usuario;
+- SELECT * FROM lancamento ORDER BY id;
+
+3. Tempos
+- Desenvolvimento da aplicacao: preencher
+- Criacao do ambiente na VM: preencher
+- Publicacao da aplicacao: preencher
+
+4. Entrega
+- PDF da documentacao
+- Link da aplicacao publicada
+- Credenciais de acesso
+- Link do repositorio GitHub

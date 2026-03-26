@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const session = require('express-session');
 const path = require('path');
 const pool = require('./db');
 
@@ -11,12 +12,72 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '..', 'views'));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use(express.urlencoded({ extended: false }));
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'task2-simples',
+  resave: false,
+  saveUninitialized: false,
+}));
 
 function formatDateForInput(value) {
   return new Date(value).toISOString().split('T')[0];
 }
 
-app.get('/', async (req, res) => {
+function requireAuth(req, res, next) {
+  if (req.session.usuario) {
+    return next();
+  }
+
+  return res.redirect('/login');
+}
+
+app.use((req, res, next) => {
+  res.locals.usuario = req.session.usuario || null;
+  next();
+});
+
+app.get('/login', (req, res) => {
+  if (req.session.usuario) {
+    return res.redirect('/');
+  }
+
+  return res.render('login', { error: null });
+});
+
+app.post('/login', async (req, res) => {
+  const { login, senha } = req.body;
+
+  try {
+    const result = await pool.query(`
+      SELECT id, nome, login
+      FROM usuario
+      WHERE login = $1
+        AND senha = $2
+        AND situacao = 'ATIVO'
+      LIMIT 1
+    `, [login, senha]);
+
+    if (!result.rows[0]) {
+      return res.status(401).render('login', {
+        error: 'Login ou senha invalidos.',
+      });
+    }
+
+    req.session.usuario = result.rows[0];
+    return res.redirect('/');
+  } catch (error) {
+    return res.status(500).render('login', {
+      error: 'Nao foi possivel fazer login.',
+    });
+  }
+});
+
+app.post('/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.redirect('/login');
+  });
+});
+
+app.get('/', requireAuth, async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT
@@ -42,7 +103,7 @@ app.get('/', async (req, res) => {
   }
 });
 
-app.get('/registrar', async (req, res) => {
+app.get('/registrar', requireAuth, async (req, res) => {
   const lancamentoId = Number(req.query.id || 0);
 
   try {
@@ -95,7 +156,7 @@ app.get('/registrar', async (req, res) => {
   }
 });
 
-app.post('/registrar', async (req, res) => {
+app.post('/registrar', requireAuth, async (req, res) => {
   const { descricao, data_lancamento, valor, situacao } = req.body;
 
   try {
@@ -124,7 +185,7 @@ app.post('/registrar', async (req, res) => {
   }
 });
 
-app.post('/registrar/:id/editar', async (req, res) => {
+app.post('/registrar/:id/editar', requireAuth, async (req, res) => {
   const { id } = req.params;
   const { descricao, data_lancamento, valor, situacao } = req.body;
 
@@ -146,7 +207,7 @@ app.post('/registrar/:id/editar', async (req, res) => {
   }
 });
 
-app.post('/registrar/:id/excluir', async (req, res) => {
+app.post('/registrar/:id/excluir', requireAuth, async (req, res) => {
   const { id } = req.params;
 
   try {
