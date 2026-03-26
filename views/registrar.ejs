@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registrar Despesa</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="header header-row">
+        <div>
+          <p class="eyebrow">Task 2</p>
+          <h1>Registrar despesa</h1>
+          <p class="subtitle">Cadastro simples para incluir, editar e excluir despesas.</p>
+        </div>
+        <a class="button button-secondary" href="/">Voltar para home</a>
+      </header>
+
+      <% if (error) { %>
+        <section class="alert">
+          <strong>Erro:</strong> <%= error %>
+        </section>
+      <% } %>
+
+      <section class="card form-card">
+        <form
+          method="post"
+          action="<%= lancamentoEmEdicao ? '/registrar/' + lancamentoEmEdicao.id + '/editar' : '/registrar' %>"
+          class="form-grid"
+        >
+          <label>
+            Descricao
+            <input
+              type="text"
+              name="descricao"
+              value="<%= lancamentoEmEdicao?.descricao || '' %>"
+              required
+            />
+          </label>
+
+          <label>
+            Data
+            <input
+              type="date"
+              name="data_lancamento"
+              value="<%= lancamentoEmEdicao?.data_lancamento || '' %>"
+              required
+            />
+          </label>
+
+          <label>
+            Valor
+            <input
+              type="number"
+              name="valor"
+              step="0.01"
+              min="0"
+              value="<%= lancamentoEmEdicao?.valor || '' %>"
+              required
+            />
+          </label>
+
+          <label>
+            Situacao
+            <select name="situacao" required>
+              <option value="PENDENTE" <%= lancamentoEmEdicao?.situacao === 'PENDENTE' ? 'selected' : '' %>>PENDENTE</option>
+              <option value="PAGO" <%= lancamentoEmEdicao?.situacao === 'PAGO' ? 'selected' : '' %>>PAGO</option>
+            </select>
+          </label>
+
+          <div class="actions">
+            <button class="button" type="submit"><%= lancamentoEmEdicao ? 'Salvar' : 'Cadastrar' %></button>
+            <% if (lancamentoEmEdicao) { %>
+              <a class="button button-secondary" href="/registrar">Cancelar</a>
+            <% } %>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Descricao</th>
+              <th>Data</th>
+              <th>Valor</th>
+              <th>Situacao</th>
+              <th>Acoes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (despesas.length === 0) { %>
+              <tr>
+                <td colspan="5" class="empty">Nenhuma despesa encontrada.</td>
+              </tr>
+            <% } %>
+
+            <% despesas.forEach((despesa) => { %>
+              <tr>
+                <td><%= despesa.descricao %></td>
+                <td><%= new Date(despesa.data_lancamento).toLocaleDateString('pt-BR') %></td>
+                <td>
+                  <%= Number(despesa.valor).toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                  }) %>
+                </td>
+                <td><%= despesa.situacao %></td>
+                <td class="table-actions">
+                  <a class="button button-small button-secondary" href="/registrar?id=<%= despesa.id %>">Editar</a>
+                  <form method="post" action="/registrar/<%= despesa.id %>/excluir">
+                    <button class="button button-small button-danger" type="submit">Excluir</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </body>
+</html>

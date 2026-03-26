@@ -29,6 +29,13 @@ body {
   margin-bottom: 20px;
 }
 
+.header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .eyebrow {
   margin: 0 0 8px;
   font-size: 0.85rem;
@@ -62,6 +69,71 @@ h1 {
 
 .card {
   overflow: hidden;
+}
+
+.form-card {
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  font-weight: 700;
+}
+
+input,
+select,
+.button {
+  font: inherit;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 12px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button-secondary {
+  background: #eadfce;
+  color: var(--text);
+}
+
+.button-danger {
+  background: #8f3b2e;
+}
+
+.button-small {
+  padding: 8px 12px;
+  font-size: 0.9rem;
 }
 
 table {
@@ -99,9 +171,25 @@ tbody tr:hover {
   color: var(--muted);
 }
 
+.table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.table-actions form {
+  margin: 0;
+}
+
 @media (max-width: 760px) {
   .container {
     padding: 20px 12px 32px;
+  }
+
+  .header-row,
+  .form-grid,
+  .actions,
+  .table-actions {
+    display: grid;
   }
 
   table,

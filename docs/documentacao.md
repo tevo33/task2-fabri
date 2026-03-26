@@ -41,6 +41,7 @@
 
 - Tela web unica para listagem dos lancamentos cadastrados
 - Exibicao de descricao, data, valor, tipo e situacao
+- Tela `/registrar` para cadastrar, editar e excluir despesas
 - Layout simples e funcional
 
 ## 2. Publicacao
@@ -88,6 +89,11 @@ Passo a passo realizado:
 7. Servico `systemd` criado com nome `task2-fabri.service`
 8. Aplicacao publicada na porta `3000`
 
+Observacao:
+
+- A primeira publicacao na VM foi feita por envio direto dos arquivos para a pasta do projeto
+- O repositório GitHub foi publicado depois, em separado
+
 Servico criado:
 
 ```ini
@@ -107,6 +113,24 @@ sudo systemctl status task2-fabri.service
 
 - Aplicacao: `http://177.44.248.58:3000/`
 - Credenciais cadastradas no banco: login `admin` / senha `123456`
+
+### Acesso ao PostgreSQL pela VM
+
+Comandos uteis:
+
+```bash
+sudo -u postgres psql
+psql -h 127.0.0.1 -U financeiro_app -d financeiro_db
+PGPASSWORD='financeiro123' psql -h 127.0.0.1 -U financeiro_app -d financeiro_db
+```
+
+Consultas basicas:
+
+```sql
+\dt
+SELECT * FROM usuario;
+SELECT * FROM lancamento ORDER BY id;
+```
 
 ## 3. Tempos
 
