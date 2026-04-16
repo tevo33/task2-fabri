@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createEmailService } = require('../src/services/emailService');
 
+// confere se faltou config
 test('emailService identifica quando o Gmail nao esta configurado', () => {
   const service = createEmailService({
     env: {},
@@ -10,6 +11,7 @@ test('emailService identifica quando o Gmail nao esta configurado', () => {
   assert.equal(service.isConfigured(), false);
 });
 
+// nao envia sem credenciais
 test('emailService retorna skipped quando nao ha configuracao', async () => {
   const service = createEmailService({
     env: {},
@@ -28,6 +30,7 @@ test('emailService retorna skipped quando nao ha configuracao', async () => {
   });
 });
 
+// monta e envia o e-mail
 test('emailService envia e-mail com Gmail SMTP e assunto esperado', async () => {
   const sentMessages = [];
   const transportConfigs = [];
@@ -68,6 +71,7 @@ test('emailService envia e-mail com Gmail SMTP e assunto esperado', async () => 
   assert.match(sentMessages[0].text, /Valor: R\$\s?1\.500,00/);
 });
 
+// fecha a conexao no fim
 test('emailService fecha o transporte quando close estiver disponivel', async () => {
   let closed = false;
   const service = createEmailService({

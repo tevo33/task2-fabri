@@ -25,6 +25,7 @@ function createLoggedAgent(pool, emailService) {
   };
 }
 
+// verifica a tela de login
 test('GET /login renderiza a tela de acesso', async () => {
   const pool = createPoolStub(async () => ({ rows: [] }));
   const app = createApp({ pool });
@@ -34,6 +35,7 @@ test('GET /login renderiza a tela de acesso', async () => {
   assert.match(response.text, /Entrar/);
 });
 
+// protege a home sem sessao
 test('GET / redireciona para /login quando usuario nao esta autenticado', async () => {
   const pool = createPoolStub(async () => ({ rows: [] }));
   const app = createApp({ pool });
@@ -43,6 +45,7 @@ test('GET / redireciona para /login quando usuario nao esta autenticado', async 
   assert.equal(response.headers.location, '/login');
 });
 
+// deixa entrar com usuario certo
 test('POST /login autentica usuario valido', async () => {
   const pool = createPoolStub(async (sql) => {
     if (sql.includes('FROM usuario')) {
@@ -63,6 +66,7 @@ test('POST /login autentica usuario valido', async () => {
   assert.equal(response.headers.location, '/');
 });
 
+// barra login errado
 test('POST /login retorna 401 para credenciais invalidas', async () => {
   const pool = createPoolStub(async () => ({ rows: [] }));
   const app = createApp({ pool });
@@ -75,6 +79,7 @@ test('POST /login retorna 401 para credenciais invalidas', async () => {
   assert.match(response.text, /Login ou senha invalidos/);
 });
 
+// aplica filtros na listagem
 test('GET / aplica filtros de data e situacao na consulta', async () => {
   const pool = createPoolStub(async (sql) => {
     if (sql.includes('FROM usuario')) {
@@ -117,6 +122,7 @@ test('GET / aplica filtros de data e situacao na consulta', async () => {
   assert.deepEqual(pool.calls[1].params, ['2026-03-01', '2026-03-31', 'PAGO']);
 });
 
+// salva despesa nova
 test('POST /registrar cria despesa e envia notificacao por e-mail', async () => {
   const notifications = [];
   const emailService = {
@@ -171,6 +177,7 @@ test('POST /registrar cria despesa e envia notificacao por e-mail', async () => 
   assert.deepEqual(pool.calls[1].params, ['Supermercado', '2026-03-13', '385.70', 'PAGO']);
 });
 
+// atualiza despesa existente
 test('POST /registrar/:id/editar atualiza despesa e envia notificacao', async () => {
   const notifications = [];
   const emailService = {
@@ -225,6 +232,7 @@ test('POST /registrar/:id/editar atualiza despesa e envia notificacao', async ()
   assert.deepEqual(pool.calls[1].params, ['Curso', '2026-03-20', '320.00', 'PENDENTE', '7']);
 });
 
+// gera o pdf da listagem
 test('GET /lancamentos/pdf exporta um arquivo PDF', async () => {
   const pool = createPoolStub(async (sql) => {
     if (sql.includes('FROM usuario')) {

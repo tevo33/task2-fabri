@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { generateLancamentosPdf } = require('../src/services/pdfService');
 
+// gera um arquivo pdf
 test('generateLancamentosPdf retorna um buffer PDF', async () => {
   const buffer = await generateLancamentosPdf({
     lancamentos: [],
@@ -12,6 +13,7 @@ test('generateLancamentosPdf retorna um buffer PDF', async () => {
   assert.equal(buffer.subarray(0, 4).toString(), '%PDF');
 });
 
+// coloca o titulo no pdf
 test('generateLancamentosPdf inclui o titulo principal', async () => {
   const buffer = await generateLancamentosPdf({
     lancamentos: [],
@@ -21,6 +23,7 @@ test('generateLancamentosPdf inclui o titulo principal', async () => {
   assert.match(buffer.toString('latin1'), /\(Relatorio de lancamentos\)/);
 });
 
+// mostra os filtros no pdf
 test('generateLancamentosPdf descreve os filtros aplicados', async () => {
   const buffer = await generateLancamentosPdf({
     lancamentos: [
