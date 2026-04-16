@@ -16,6 +16,7 @@
         </div>
         <div class="header-actions">
           <a class="button" href="/registrar">Registrar despesa</a>
+          <a class="button button-secondary" href="/lancamentos/pdf<%= filterQueryString ? '?' + filterQueryString : '' %>">Exportar PDF</a>
           <form method="post" action="/logout">
             <button class="button button-secondary" type="submit">Sair</button>
           </form>
@@ -27,6 +28,41 @@
           <strong>Erro:</strong> <%= error %>
         </section>
       <% } %>
+
+      <% if (flash) { %>
+        <section class="alert <%= flash.type === 'success' ? 'alert-success' : '' %>">
+          <strong><%= flash.type === 'success' ? 'Sucesso:' : 'Aviso:' %></strong> <%= flash.message %>
+        </section>
+      <% } %>
+
+      <section class="card form-card">
+        <form method="get" action="/" class="form-grid filters-grid">
+          <label>
+            Data inicial
+            <input type="date" name="data_inicio" value="<%= filters.data_inicio %>" />
+          </label>
+
+          <label>
+            Data final
+            <input type="date" name="data_fim" value="<%= filters.data_fim %>" />
+          </label>
+
+          <label>
+            Situacao
+            <select name="situacao">
+              <option value="">Todas</option>
+              <% statusOptions.forEach((status) => { %>
+                <option value="<%= status %>" <%= filters.situacao === status ? 'selected' : '' %>><%= status %></option>
+              <% }) %>
+            </select>
+          </label>
+
+          <div class="actions">
+            <button class="button" type="submit">Filtrar</button>
+            <a class="button button-secondary" href="/">Limpar filtros</a>
+          </div>
+        </form>
+      </section>
 
       <section class="card">
         <table>

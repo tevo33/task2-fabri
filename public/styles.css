@@ -39,6 +39,7 @@ body {
 .header-actions {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .eyebrow {
@@ -72,6 +73,11 @@ h1 {
   padding: 14px 16px;
 }
 
+.alert-success {
+  background: #eef8ef;
+  border-color: #b7d9ba;
+}
+
 .card {
   overflow: hidden;
 }
@@ -79,6 +85,10 @@ h1 {
 .form-card {
   margin-bottom: 20px;
   padding: 20px;
+}
+
+.filters-grid {
+  align-items: end;
 }
 
 .login-wrap {

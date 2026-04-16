@@ -28,6 +28,12 @@
         </section>
       <% } %>
 
+      <% if (flash) { %>
+        <section class="alert <%= flash.type === 'success' ? 'alert-success' : '' %>">
+          <strong><%= flash.type === 'success' ? 'Sucesso:' : 'Aviso:' %></strong> <%= flash.message %>
+        </section>
+      <% } %>
+
       <section class="card form-card">
         <form
           method="post"
@@ -69,8 +75,9 @@
           <label>
             Situacao
             <select name="situacao" required>
-              <option value="PENDENTE" <%= lancamentoEmEdicao?.situacao === 'PENDENTE' ? 'selected' : '' %>>PENDENTE</option>
-              <option value="PAGO" <%= lancamentoEmEdicao?.situacao === 'PAGO' ? 'selected' : '' %>>PAGO</option>
+              <% expenseStatusOptions.forEach((status) => { %>
+                <option value="<%= status %>" <%= lancamentoEmEdicao?.situacao === status ? 'selected' : '' %>><%= status %></option>
+              <% }) %>
             </select>
           </label>
 
@@ -79,6 +86,35 @@
             <% if (lancamentoEmEdicao) { %>
               <a class="button button-secondary" href="/registrar">Cancelar</a>
             <% } %>
+          </div>
+        </form>
+      </section>
+
+      <section class="card form-card">
+        <form method="get" action="/registrar" class="form-grid filters-grid">
+          <label>
+            Data inicial
+            <input type="date" name="data_inicio" value="<%= filters.data_inicio %>" />
+          </label>
+
+          <label>
+            Data final
+            <input type="date" name="data_fim" value="<%= filters.data_fim %>" />
+          </label>
+
+          <label>
+            Situacao
+            <select name="situacao">
+              <option value="">Todas</option>
+              <% statusOptions.forEach((status) => { %>
+                <option value="<%= status %>" <%= filters.situacao === status ? 'selected' : '' %>><%= status %></option>
+              <% }) %>
+            </select>
+          </label>
+
+          <div class="actions">
+            <button class="button" type="submit">Filtrar</button>
+            <a class="button button-secondary" href="/registrar">Limpar filtros</a>
           </div>
         </form>
       </section>

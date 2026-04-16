@@ -5,7 +5,8 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node --watch src/server.js"
+    "dev": "node --watch src/server.js",
+    "test": "node --test"
   },
   "keywords": [
     "node",
@@ -19,6 +20,9 @@
     "ejs": "^5.0.1",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
-    "pg": "^8.20.0"
+    "nodemailer": "^8.0.5",
+    "pdfkit": "^0.18.0",
+    "pg": "^8.20.0",
+    "supertest": "^7.2.2"
   }
 }
