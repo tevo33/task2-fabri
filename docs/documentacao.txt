@@ -1,0 +1,121 @@
+Documentação - Task 2
+
+1. Aplicação
+
+Tecnologias utilizadas
+- Node.js
+- Express
+- PostgreSQL
+- EJS
+
+Número de classes da aplicação
+- 0 classes
+- A aplicação foi construída com módulos simples para manter o projeto enxuto
+
+Modelagem do banco de dados
+
+Tabela: usuário
+- id | SERIAL | chave primária
+- nome | VARCHAR(120) | obrigatório
+- login | VARCHAR(80) | obrigatório e único
+- senha | VARCHAR(120) | obrigatório
+- situacao | VARCHAR(20) | obrigatório
+
+Tabela: lancamento
+- id | SERIAL | chave primária
+- descricao | VARCHAR(150) | obrigatório
+- data_lancamento | DATE | obrigatório
+- valor | NUMERIC(10,2) | obrigatório
+- tipo_lancamento | VARCHAR(20) | obrigatório
+- situacao | VARCHAR(20) | obrigatório
+
+Interface desenvolvida
+- Tela de login em /login
+- Tela principal em / para listar lançamentos
+- Tela em /registrar para cadastrar, editar e excluir despesas
+- Interface simples e funcional
+
+2. Publicação
+
+Como acessar a VM
+Passo 1: abrir o terminal
+Passo 2: executar o comando abaixo
+- ssh univates@177.44.248.58
+Passo 3: informar a senha
+- uni415
+
+Instalação e configuração do ambiente na VM
+Passo 1: acessar a pasta do projeto
+- cd /home/univates/task2-fabri
+
+Passo 2: instalar as dependências da aplicação
+- npm install --omit=dev
+
+Passo 3: criar o usuário do PostgreSQL para a aplicação
+- sudo -u postgres psql
+- CREATE ROLE financeiro_app WITH LOGIN PASSWORD 'financeiro123';
+- \q
+
+Passo 4: criar o banco de dados
+- sudo -u postgres createdb -O financeiro_app financeiro_db
+
+Passo 5: executar o script de criação das tabelas
+- PGPASSWORD='financeiro123' psql -h 127.0.0.1 -U financeiro_app -d financeiro_db -f sql/schema.sql
+
+Passo 6: executar o script de carga inicial
+- PGPASSWORD='financeiro123' psql -h 127.0.0.1 -U financeiro_app -d financeiro_db -f sql/seed.sql
+
+Passo 7: criar o arquivo .env da aplicação
+- PORT=3000
+- DB_HOST=127.0.0.1
+- DB_PORT=5432
+- DB_NAME=financeiro_db
+- DB_USER=financeiro_app
+- DB_PASSWORD=financeiro123
+
+Passo 8: liberar a porta da aplicação no firewall
+- sudo ufw allow 3000/tcp
+
+Passo 9: configurar o serviço da aplicação
+- sudo systemctl daemon-reload
+- sudo systemctl enable --now task2-fabri.service
+- sudo systemctl restart task2-fabri.service
+
+Passo 10: verificar se o serviço está ativo
+- sudo systemctl status task2-fabri.service
+
+Comandos úteis do serviço
+- sudo systemctl start task2-fabri.service
+- sudo systemctl stop task2-fabri.service
+- sudo systemctl restart task2-fabri.service
+- sudo systemctl status task2-fabri.service
+
+Como acessar o PostgreSQL pela VM
+Passo 1: conectar diretamente no banco da aplicação
+- PGPASSWORD='financeiro123' psql -h 127.0.0.1 -U financeiro_app -d financeiro_db
+
+Passo 2: consultar as tabelas
+- \dt
+- SELECT * FROM usuario;
+- SELECT * FROM lancamento ORDER BY id;
+
+URL de acesso
+- Login: http://177.44.248.58:3000/login
+- Aplicação: http://177.44.248.58:3000/
+
+Credenciais de acesso
+- Usuário: admin
+- Senha: 123456
+
+3. Tempos
+
+- Desenvolvimento da aplicação: preencher
+- Criação do ambiente na VM: preencher
+- Publicação da aplicação: preencher
+
+4. Entrega
+
+- Arquivo da documentação
+- Link da aplicação na VM
+- Credenciais de acesso
+- Link do repositório GitHub

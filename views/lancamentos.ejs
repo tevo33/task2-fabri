@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lista de Lancamentos</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="<%= urlFor('/styles.css') %>" />
   </head>
   <body>
     <main class="container">
@@ -15,9 +15,9 @@
           <p class="subtitle">Listagem simples dos lancamentos cadastrados.</p>
         </div>
         <div class="header-actions">
-          <a class="button" href="/registrar">Registrar despesa</a>
-          <a class="button button-secondary" href="/lancamentos/pdf<%= filterQueryString ? '?' + filterQueryString : '' %>">Exportar PDF</a>
-          <form method="post" action="/logout">
+          <a class="button" href="<%= urlFor('/registrar') %>">Registrar despesa</a>
+          <a class="button button-secondary" href="<%= urlFor('/lancamentos/pdf') %><%= filterQueryString ? '?' + filterQueryString : '' %>">Exportar PDF</a>
+          <form method="post" action="<%= urlFor('/logout') %>">
             <button class="button button-secondary" type="submit">Sair</button>
           </form>
         </div>
@@ -36,7 +36,7 @@
       <% } %>
 
       <section class="card form-card">
-        <form method="get" action="/" class="form-grid filters-grid">
+        <form method="get" action="<%= urlFor('/') %>" class="form-grid filters-grid">
           <label>
             Data inicial
             <input type="date" name="data_inicio" value="<%= filters.data_inicio %>" />
@@ -59,7 +59,7 @@
 
           <div class="actions">
             <button class="button" type="submit">Filtrar</button>
-            <a class="button button-secondary" href="/">Limpar filtros</a>
+            <a class="button button-secondary" href="<%= urlFor('/') %>">Limpar filtros</a>
           </div>
         </form>
       </section>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="<%= urlFor('/styles.css') %>" />
   </head>
   <body>
     <main class="container login-wrap">
@@ -19,7 +19,7 @@
           </section>
         <% } %>
 
-        <form method="post" action="/login" class="form-grid form-grid-single">
+        <form method="post" action="<%= urlFor('/login') %>" class="form-grid form-grid-single">
           <label>
             Login
             <input type="text" name="login" required />

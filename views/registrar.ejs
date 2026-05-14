@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Registrar Despesa</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="<%= urlFor('/styles.css') %>" />
   </head>
   <body>
     <main class="container">
@@ -15,8 +15,8 @@
           <p class="subtitle">Cadastro simples para incluir, editar e excluir despesas.</p>
         </div>
         <div class="header-actions">
-          <a class="button button-secondary" href="/">Voltar para home</a>
-          <form method="post" action="/logout">
+          <a class="button button-secondary" href="<%= urlFor('/') %>">Voltar para home</a>
+          <form method="post" action="<%= urlFor('/logout') %>">
             <button class="button button-secondary" type="submit">Sair</button>
           </form>
         </div>
@@ -37,7 +37,7 @@
       <section class="card form-card">
         <form
           method="post"
-          action="<%= lancamentoEmEdicao ? '/registrar/' + lancamentoEmEdicao.id + '/editar' : '/registrar' %>"
+          action="<%= lancamentoEmEdicao ? urlFor('/registrar/' + lancamentoEmEdicao.id + '/editar') : urlFor('/registrar') %>"
           class="form-grid"
         >
           <label>
@@ -84,14 +84,14 @@
           <div class="actions">
             <button class="button" type="submit"><%= lancamentoEmEdicao ? 'Salvar' : 'Cadastrar' %></button>
             <% if (lancamentoEmEdicao) { %>
-              <a class="button button-secondary" href="/registrar">Cancelar</a>
+              <a class="button button-secondary" href="<%= urlFor('/registrar') %>">Cancelar</a>
             <% } %>
           </div>
         </form>
       </section>
 
       <section class="card form-card">
-        <form method="get" action="/registrar" class="form-grid filters-grid">
+        <form method="get" action="<%= urlFor('/registrar') %>" class="form-grid filters-grid">
           <label>
             Data inicial
             <input type="date" name="data_inicio" value="<%= filters.data_inicio %>" />
@@ -114,7 +114,7 @@
 
           <div class="actions">
             <button class="button" type="submit">Filtrar</button>
-            <a class="button button-secondary" href="/registrar">Limpar filtros</a>
+            <a class="button button-secondary" href="<%= urlFor('/registrar') %>">Limpar filtros</a>
           </div>
         </form>
       </section>
@@ -149,8 +149,8 @@
                 </td>
                 <td><%= despesa.situacao %></td>
                 <td class="table-actions">
-                  <a class="button button-small button-secondary" href="/registrar?id=<%= despesa.id %>">Editar</a>
-                  <form method="post" action="/registrar/<%= despesa.id %>/excluir">
+                  <a class="button button-small button-secondary" href="<%= urlFor('/registrar') %>?id=<%= despesa.id %>">Editar</a>
+                  <form method="post" action="<%= urlFor('/registrar/' + despesa.id + '/excluir') %>">
                     <button class="button button-small button-danger" type="submit">Excluir</button>
                   </form>
                 </td>

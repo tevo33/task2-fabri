@@ -1,0 +1,64 @@
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    restart: unless-stopped
+
+  app-homolog:
+    build: .
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      BASE_PATH: /homolog
+      SESSION_SECRET: task2-homolog-secret
+      DB_HOST: db-homolog
+      DB_PORT: 5432
+      DB_NAME: financeiro_homolog
+      DB_USER: task2
+      DB_PASSWORD: task2pass
+    depends_on:
+      - db-homolog
+    restart: unless-stopped
+
+  app-prod:
+    build: .
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      BASE_PATH: /prod
+      SESSION_SECRET: task2-prod-secret
+      DB_HOST: db-prod
+      DB_PORT: 5432
+      DB_NAME: financeiro_prod
+      DB_USER: task2
+      DB_PASSWORD: task2pass
+    depends_on:
+      - db-prod
+    restart: unless-stopped
+
+  db-homolog:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: financeiro_homolog
+      POSTGRES_USER: task2
+      POSTGRES_PASSWORD: task2pass
+    volumes:
+      - db_homolog_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  db-prod:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: financeiro_prod
+      POSTGRES_USER: task2
+      POSTGRES_PASSWORD: task2pass
+    volumes:
+      - db_prod_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  db_homolog_data:
+  db_prod_data:

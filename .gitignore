@@ -2,4 +2,3 @@ node_modules/
 .env
 npm-debug.log*
 task2.txt
-docs/

@@ -11,6 +11,24 @@ const { createEmailService } = require('./services/emailService');
 const { generateLancamentosPdf } = require('./services/pdfService');
 const EXPENSE_STATUS_OPTIONS = ['PENDENTE', 'PAGO'];
 
+function normalizeBasePath(value = '') {
+  const cleaned = value.trim().replace(/\/+$/, '');
+
+  if (!cleaned || cleaned === '/') {
+    return '';
+  }
+
+  return cleaned.startsWith('/') ? cleaned : `/${cleaned}`;
+}
+
+function buildUrl(basePath, pathname) {
+  if (pathname === '/') {
+    return basePath || '/';
+  }
+
+  return `${basePath}${pathname}`;
+}
+
 function formatDateForInput(value) {
   return new Date(value).toISOString().split('T')[0];
 }
@@ -20,7 +38,7 @@ function requireAuth(req, res, next) {
     return next();
   }
 
-  return res.redirect('/login');
+  return res.redirect(buildUrl(res.locals.basePath, '/login'));
 }
 
 function setFlash(req, type, message) {
@@ -71,39 +89,47 @@ async function listLancamentos(pool, filters, options = {}) {
 function createApp(options = {}) {
   const pool = options.pool;
   const emailService = options.emailService || createEmailService();
+  const basePath = normalizeBasePath(options.basePath || process.env.BASE_PATH || '');
 
   if (!pool || typeof pool.query !== 'function') {
     throw new Error('A pool de banco precisa ser informada.');
   }
 
   const app = express();
+  const router = express.Router();
 
   app.set('view engine', 'ejs');
   app.set('views', path.join(__dirname, '..', 'views'));
-  app.use(express.static(path.join(__dirname, '..', 'public')));
   app.use(express.urlencoded({ extended: false }));
   app.use(session({
     secret: process.env.SESSION_SECRET || 'task2-simples',
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      path: basePath || '/',
+    },
   }));
 
   app.use((req, res, next) => {
     res.locals.usuario = req.session.usuario || null;
     res.locals.flash = req.session.flash || null;
+    res.locals.basePath = basePath;
+    res.locals.urlFor = (pathname) => buildUrl(basePath, pathname);
     delete req.session.flash;
     next();
   });
 
-  app.get('/login', (req, res) => {
+  app.use(basePath || '/', express.static(path.join(__dirname, '..', 'public')));
+
+  router.get('/login', (req, res) => {
     if (req.session.usuario) {
-      return res.redirect('/');
+      return res.redirect(buildUrl(basePath, '/'));
     }
 
     return res.render('login', { error: null });
   });
 
-  app.post('/login', async (req, res) => {
+  router.post('/login', async (req, res) => {
     const { login, senha } = req.body;
 
     try {
@@ -123,7 +149,7 @@ function createApp(options = {}) {
       }
 
       req.session.usuario = result.rows[0];
-      return res.redirect('/');
+      return res.redirect(buildUrl(basePath, '/'));
     } catch (error) {
       return res.status(500).render('login', {
         error: 'Nao foi possivel fazer login.',
@@ -131,13 +157,13 @@ function createApp(options = {}) {
     }
   });
 
-  app.post('/logout', (req, res) => {
+  router.post('/logout', (req, res) => {
     req.session.destroy(() => {
-      res.redirect('/login');
+      res.redirect(buildUrl(basePath, '/login'));
     });
   });
 
-  app.get('/', requireAuth, async (req, res) => {
+  router.get('/', requireAuth, async (req, res) => {
     const filters = normalizeFilters(req.query);
 
     try {
@@ -163,7 +189,7 @@ function createApp(options = {}) {
     }
   });
 
-  app.get('/lancamentos/pdf', requireAuth, async (req, res) => {
+  router.get('/lancamentos/pdf', requireAuth, async (req, res) => {
     const filters = normalizeFilters(req.query);
 
     try {
@@ -178,7 +204,7 @@ function createApp(options = {}) {
     }
   });
 
-  app.get('/registrar', requireAuth, async (req, res) => {
+  router.get('/registrar', requireAuth, async (req, res) => {
     const lancamentoId = Number(req.query.id || 0);
     const filters = normalizeFilters(req.query);
 
@@ -227,7 +253,7 @@ function createApp(options = {}) {
     }
   });
 
-  app.post('/registrar', requireAuth, async (req, res) => {
+  router.post('/registrar', requireAuth, async (req, res) => {
     const { descricao, data_lancamento, valor, situacao } = req.body;
 
     try {
@@ -244,7 +270,7 @@ function createApp(options = {}) {
 
       const emailResult = await sendNotification(emailService, result.rows[0], 'criado');
       setFlash(req, 'success', buildNotificationMessage(emailResult, 'cadastrada'));
-      res.redirect('/registrar');
+      res.redirect(buildUrl(basePath, '/registrar'));
     } catch (error) {
       res.status(400).render('registrar', {
         despesas: [],
@@ -262,7 +288,7 @@ function createApp(options = {}) {
     }
   });
 
-  app.post('/registrar/:id/editar', requireAuth, async (req, res) => {
+  router.post('/registrar/:id/editar', requireAuth, async (req, res) => {
     const { id } = req.params;
     const { descricao, data_lancamento, valor, situacao } = req.body;
 
@@ -281,19 +307,19 @@ function createApp(options = {}) {
 
       if (!result.rows[0]) {
         setFlash(req, 'error', 'Despesa nao encontrada para atualizacao.');
-        return res.redirect('/registrar');
+        return res.redirect(buildUrl(basePath, '/registrar'));
       }
 
       const emailResult = await sendNotification(emailService, result.rows[0], 'atualizado');
       setFlash(req, 'success', buildNotificationMessage(emailResult, 'atualizada'));
-      res.redirect('/registrar');
+      res.redirect(buildUrl(basePath, '/registrar'));
     } catch (error) {
       setFlash(req, 'error', 'Nao foi possivel atualizar a despesa.');
-      res.redirect(`/registrar?id=${id}`);
+      res.redirect(buildUrl(basePath, `/registrar?id=${id}`));
     }
   });
 
-  app.post('/registrar/:id/excluir', requireAuth, async (req, res) => {
+  router.post('/registrar/:id/excluir', requireAuth, async (req, res) => {
     const { id } = req.params;
 
     try {
@@ -307,9 +333,11 @@ function createApp(options = {}) {
     } catch (error) {
       setFlash(req, 'error', 'Nao foi possivel excluir a despesa.');
     } finally {
-      res.redirect('/registrar');
+      res.redirect(buildUrl(basePath, '/registrar'));
     }
   });
+
+  app.use(basePath || '/', router);
 
   return app;
 }
@@ -317,4 +345,6 @@ function createApp(options = {}) {
 module.exports = {
   createApp,
   formatDateForInput,
+  normalizeBasePath,
+  buildUrl,
 };

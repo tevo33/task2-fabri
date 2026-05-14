@@ -27,6 +27,7 @@ Aplicacao enxuta em Node.js com PostgreSQL para CRUD de despesas pessoais, lista
 
 ```bash
 npm install
+npm run migrate
 npm start
 ```
 
@@ -36,7 +37,34 @@ Para rodar os testes:
 npm test
 ```
 
+A validacao completa de integracao local roda testes e qualidade de codigo:
+
+```bash
+npm run ci
+```
+
 A aplicacao ficara disponivel em `http://localhost:3000`.
+
+## Ambientes com Docker
+
+A tarefa final usa dois ambientes isolados por container e banco:
+
+- Homologacao: `http://177.44.248.58:3000/homolog`
+- Producao: `http://177.44.248.58:3000/prod`
+
+Na VM, atualize cada ambiente com um comando:
+
+```bash
+./scripts/deploy.sh homolog
+./scripts/deploy.sh prod
+```
+
+O deploy de producao exige que o mesmo commit ja tenha sido aplicado em homologacao.
+
+Documentos auxiliares da entrega final:
+
+- `docs/arquitetura-final.md`: arquitetura, tecnologias e fluxo CI/CD
+- `docs/roteiro-mudancas.md`: roteiro para registrar e demonstrar mudancas
 
 ## Recursos
 
