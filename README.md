@@ -55,10 +55,13 @@ A tarefa final usa dois ambientes isolados por container e banco:
 Na VM, atualize cada ambiente com um comando:
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/tevo33/task2-fabri/main/scripts/bootstrap.sh | sh
+cd ~/task2-fabri
 ./scripts/deploy.sh homolog
 ./scripts/deploy.sh prod
 ```
 
+O bootstrap instala Git, Docker e Docker Compose e clona o projeto.
 O deploy de producao exige que o mesmo commit ja tenha sido aplicado em homologacao.
 
 Documentos auxiliares da entrega final:

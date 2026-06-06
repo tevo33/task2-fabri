@@ -13,6 +13,14 @@ mkdir -p .deploy
 git pull --ff-only
 CURRENT_SHA="$(git rev-parse HEAD)"
 
+docker_compose() {
+  if docker info >/dev/null 2>&1; then
+    docker compose "$@"
+  else
+    sudo docker compose "$@"
+  fi
+}
+
 if [ "$ENVIRONMENT" = "prod" ]; then
   if [ ! -f .deploy/homolog.sha ]; then
     echo "Homologacao ainda nao foi atualizada nesta VM."
@@ -29,10 +37,10 @@ if [ "$ENVIRONMENT" = "prod" ]; then
   fi
 fi
 
-docker compose build "app-$ENVIRONMENT"
-docker compose up -d "db-$ENVIRONMENT"
-docker compose run --rm "app-$ENVIRONMENT" npm run migrate
-docker compose up -d "app-$ENVIRONMENT" nginx
+docker_compose build "app-$ENVIRONMENT"
+docker_compose up -d "db-$ENVIRONMENT"
+docker_compose run --rm "app-$ENVIRONMENT" npm run migrate
+docker_compose up -d "app-$ENVIRONMENT" nginx
 
 printf "%s" "$CURRENT_SHA" > ".deploy/$ENVIRONMENT.sha"
 

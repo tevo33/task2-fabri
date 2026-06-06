@@ -29,6 +29,7 @@ NGINX container
 - Ambiente: VM Univates `177.44.248.58`, Docker e Docker Compose.
 - Aplicacao: Node.js 24, Express, EJS e CSS simples.
 - Banco de dados: PostgreSQL em dois containers isolados.
+- Controle de mudanca: GitHub Issues.
 - Controle de versao: Git e GitHub.
 - Integracao: GitHub Actions.
 - Testes automatizados: `node --test`, com 20 testes e estatisticas exibidas no console.
@@ -51,8 +52,11 @@ As alteracoes de banco ficam em `sql/migrations`. O script `npm run migrate` cri
 ## Comandos de operacao na VM
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/tevo33/task2-fabri/main/scripts/bootstrap.sh | sh
+cd ~/task2-fabri
 ./scripts/deploy.sh homolog
 ./scripts/deploy.sh prod
 ```
 
+O primeiro comando automatiza a instalacao de Git, Docker, Docker Compose e do projeto em uma VM limpa.
 O segundo comando so executa quando o commit atual ja foi aplicado em homologacao.
