@@ -6,7 +6,7 @@ const {
   buildFilterQueryString,
 } = require('../src/utils/filters');
 
-// devolve filtro vazio
+// devolve filtro vazi
 test('normalizeFilters retorna filtros vazios por padrao', () => {
   assert.deepEqual(normalizeFilters(), {
     data_inicio: '',
