@@ -4,6 +4,10 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   integrate:
     runs-on: ubuntu-latest
@@ -29,3 +33,24 @@ jobs:
 
       - name: Docker build
         run: docker build -t task2-fabri-ci .
+
+  open-pull-request:
+    needs: integrate
+    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Open pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          if [ "$(gh pr list --head "$BRANCH" --state open --json number --jq length)" -eq 0 ]; then
+            gh pr create \
+              --base main \
+              --head "$BRANCH" \
+              --title "Atualiza $BRANCH" \
+              --body "Pull Request criado automaticamente apos aprovacao do CI."
+          else
+            echo "A branch $BRANCH ja possui um Pull Request aberto."
+          fi
