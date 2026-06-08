@@ -43,9 +43,12 @@ jobs:
       - name: Open pull request
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           BRANCH: ${{ github.ref_name }}
         run: |
-          if [ "$(gh pr list --head "$BRANCH" --state open --json number --jq length)" -eq 0 ]; then
+          OPEN_PR_COUNT="$(gh pr list --head "$BRANCH" --state open --json number --jq length)"
+
+          if [ "$OPEN_PR_COUNT" -eq 0 ]; then
             gh pr create \
               --base main \
               --head "$BRANCH" \
