@@ -108,7 +108,7 @@ Mostrar o GitHub Actions executando:
 - ESLint para qualidade de codigo;
 - build da imagem Docker.
 
-Depois do CI aprovado, abrir e mesclar o Pull Request na `main`.
+Depois do CI aprovado, o GitHub Actions abre o Pull Request e faz o merge na `main` quando nao existem conflitos.
 
 ## 8. Atualizar e validar Homologacao
 
