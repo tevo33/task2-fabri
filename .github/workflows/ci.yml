@@ -5,7 +5,7 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
 
 jobs:
@@ -34,26 +34,44 @@ jobs:
       - name: Docker build
         run: docker build -t task2-fabri-ci .
 
-  open-pull-request:
+  merge-pull-request:
     needs: integrate
     if: github.event_name == 'push' && github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Open pull request
+      - name: Open and merge pull request
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           BRANCH: ${{ github.ref_name }}
         run: |
-          OPEN_PR_COUNT="$(gh pr list --head "$BRANCH" --state open --json number --jq length)"
+          PR_NUMBER="$(gh pr list --head "$BRANCH" --base main --state open --json number --jq '.[0].number')"
 
-          if [ "$OPEN_PR_COUNT" -eq 0 ]; then
-            gh pr create \
+          if [ -z "$PR_NUMBER" ]; then
+            PR_URL="$(gh pr create \
               --base main \
               --head "$BRANCH" \
               --title "Atualiza $BRANCH" \
-              --body "Pull Request criado automaticamente apos aprovacao do CI."
-          else
-            echo "A branch $BRANCH ja possui um Pull Request aberto."
+              --body "Pull Request criado automaticamente apos aprovacao do CI.")"
+            PR_NUMBER="${PR_URL##*/}"
           fi
+
+          for attempt in $(seq 1 12); do
+            MERGEABLE="$(gh pr view "$PR_NUMBER" --json mergeable --jq .mergeable)"
+
+            if [ "$MERGEABLE" = "MERGEABLE" ]; then
+              gh pr merge "$PR_NUMBER" --merge --delete-branch
+              exit 0
+            fi
+
+            if [ "$MERGEABLE" = "CONFLICTING" ]; then
+              echo "Pull Request possui conflitos e nao sera mesclado."
+              exit 1
+            fi
+
+            sleep 5
+          done
+
+          echo "GitHub nao confirmou a possibilidade de merge no tempo esperado."
+          exit 1
