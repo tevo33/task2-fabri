@@ -5,15 +5,16 @@
 ```text
 GitHub
   |
-  | push / pull request
+  | push na branch homolog
   v
 GitHub Actions
   |-- npm ci
   |-- npm test
   |-- npm run quality
   |-- docker build
+  |-- abre PR homolog -> main
   |
-  | deploy semi-automatizado na VM
+  | validacao manual em HML e merge manual
   v
 VM Univates - Ubuntu/Linux + Docker
   |
@@ -35,7 +36,9 @@ NGINX container
 - Testes automatizados: `node --test`, com 20 testes e estatisticas exibidas no console.
 - Qualidade de codigo: ESLint com regras de complexidade, tamanho de funcao, variaveis nao usadas e `console.log`.
 - Build: imagem Docker gerada no CI.
-- Deploy: `scripts/deploy.sh`, com promocao obrigatoria de homologacao antes de producao.
+- Branch `homolog`: versao em validacao no ambiente de Homologacao.
+- Branch `main`: versao aprovada para o ambiente de Producao.
+- Deploy: `scripts/deploy.sh`, com promocao obrigatoria de Homologacao antes de Producao.
 
 ## Ambientes
 
@@ -59,4 +62,4 @@ cd ~/task2-fabri
 ```
 
 O primeiro comando automatiza a instalacao de Git, Docker, Docker Compose e do projeto em uma VM limpa.
-O segundo comando so executa quando o commit atual ja foi aplicado em homologacao.
+O deploy de Homologacao atualiza a branch `homolog`. O deploy de Producao atualiza a `main` e so executa quando ela contem o commit validado em Homologacao.

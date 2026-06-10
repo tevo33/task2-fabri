@@ -5,6 +5,7 @@ Este roteiro segue a ordem de validacao do enunciado e da revisao feita em aula.
 ## Antes da apresentacao
 
 - Confirmar que o repositorio esta publico e que a branch principal e `main`.
+- Confirmar que as branches fixas `homolog` e `main` estao sincronizadas.
 - Confirmar acesso SSH a VM e permissao de `sudo`.
 - Deixar abertas duas abas: GitHub Actions e GitHub Issues.
 - Nao deixar imagens ou containers prontos na VM.
@@ -75,9 +76,8 @@ Validar primeiro em Homologacao e depois promover o mesmo commit para Producao.
 No computador de desenvolvimento:
 
 ```bash
-git checkout main
-git pull
-git checkout -b mudanca-label-tabela
+git switch homolog
+git pull origin homolog
 ```
 
 1. Alterar somente o texto solicitado no arquivo `.ejs` indicado.
@@ -99,7 +99,7 @@ CREATE TABLE categoria (
 npm run ci
 git add views sql/migrations
 git commit -m "Altera label e adiciona tabela solicitada"
-git push -u origin mudanca-label-tabela
+git push origin homolog
 ```
 
 Mostrar o GitHub Actions executando:
@@ -108,7 +108,7 @@ Mostrar o GitHub Actions executando:
 - ESLint para qualidade de codigo;
 - build da imagem Docker.
 
-Depois do CI aprovado, o GitHub Actions abre o Pull Request e faz o merge na `main` quando nao existem conflitos.
+Depois do CI aprovado, o GitHub Actions abre o Pull Request de `homolog` para `main`. Nao fazer o merge ainda.
 
 ## 8. Atualizar e validar Homologacao
 
@@ -130,7 +130,7 @@ Confirmar que a nova tabela apareceu e que a quantidade anterior de lancamentos 
 
 ## 9. Aprovar e promover Producao
 
-Declarar a aprovacao de Homologacao e executar:
+Depois da aprovacao de Homologacao, fazer o merge manual do Pull Request para `main`. Entao executar:
 
 ```bash
 ./scripts/deploy.sh prod
@@ -143,7 +143,7 @@ sudo docker compose exec db-prod psql -U task2 -d financeiro_prod -c "\dt"
 sudo docker compose exec db-prod psql -U task2 -d financeiro_prod -c "SELECT COUNT(*) FROM lancamento;"
 ```
 
-Confirmar a nova tabela e os dados antigos preservados. O script bloqueia Producao se o mesmo commit ainda nao tiver passado por Homologacao.
+Confirmar a nova tabela e os dados antigos preservados. O script bloqueia Producao se a `main` ainda nao contiver o commit validado em Homologacao.
 
 ## Checklist final
 
@@ -156,5 +156,6 @@ Confirmar a nova tabela e os dados antigos preservados. O script bloqueia Produc
 - Commit e push realizados.
 - 20 testes, qualidade e build aprovados no GitHub Actions.
 - Homologacao atualizada primeiro.
-- Producao promovida com o mesmo commit.
+- Pull Request mesclado manualmente somente depois da validacao em Homologacao.
+- Producao promovida a partir da `main`.
 - Nova tabela adicionada sem perder dados existentes.

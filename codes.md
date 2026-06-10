@@ -56,15 +56,14 @@ docker compose exec db-prod psql -U task2 -d financeiro_prod -c "\dt"
 docker compose exec db-prod psql -U task2 -d financeiro_prod -c "SELECT COUNT(*) FROM lancamento;"
 ```
 
-## 7. Criar branch da mudanca
+## 7. Atualizar a branch Homolog
 
-Atualiza a `main` e cria uma branch para o label e a migration solicitados.
+Usa a branch fixa que representa a versao em validacao.
 
 ```bash
 exit
-git checkout main
-git pull
-git checkout -b mudanca-label-tabela
+git switch homolog
+git pull origin homolog
 ```
 
 ## 8. Demonstrar erro de qualidade
@@ -90,17 +89,17 @@ npm run ci
 
 ## 10. Versionar e enviar
 
-O push dispara CI, criacao do Pull Request e merge automatico quando nao ha conflitos.
+O push dispara CI e abre o Pull Request para `main` somente se tudo passar.
 
 ```bash
 git add views sql/migrations
 git commit -m "Altera label e adiciona tabela solicitada"
-git push -u origin mudanca-label-tabela
+git push origin homolog
 ```
 
 ## 11. Atualizar Homologacao
 
-Baixa a `main` mesclada, aplica apenas a nova migration e atualiza HML.
+Baixa a branch `homolog`, aplica apenas a nova migration e atualiza HML.
 
 ```bash
 cd ~/task2-fabri
@@ -111,7 +110,7 @@ docker compose exec db-homolog psql -U task2 -d financeiro_homolog -c "SELECT CO
 
 ## 12. Atualizar Producao
 
-Promove o mesmo commit validado em HML e confirma banco e dados em PROD.
+Depois do merge manual do PR, baixa a `main` aprovada e atualiza PROD.
 
 ```bash
 ./scripts/deploy.sh prod

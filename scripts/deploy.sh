@@ -10,7 +10,15 @@ fi
 
 mkdir -p .deploy
 
-git pull --ff-only
+if [ "$ENVIRONMENT" = "homolog" ]; then
+  BRANCH="homolog"
+else
+  BRANCH="main"
+fi
+
+git fetch origin
+git switch "$BRANCH"
+git pull --ff-only origin "$BRANCH"
 CURRENT_SHA="$(git rev-parse HEAD)"
 
 docker_compose() {
@@ -29,10 +37,10 @@ if [ "$ENVIRONMENT" = "prod" ]; then
 
   HOMOLOG_SHA="$(cat .deploy/homolog.sha)"
 
-  if [ "$HOMOLOG_SHA" != "$CURRENT_SHA" ]; then
-    echo "Atualize homologacao antes de promover producao."
+  if ! git merge-base --is-ancestor "$HOMOLOG_SHA" "$CURRENT_SHA"; then
+    echo "O commit homologado ainda nao foi mesclado na main."
     echo "homolog: $HOMOLOG_SHA"
-    echo "atual:   $CURRENT_SHA"
+    echo "main:    $CURRENT_SHA"
     exit 1
   fi
 fi

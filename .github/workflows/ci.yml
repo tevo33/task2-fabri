@@ -2,10 +2,12 @@ name: CI
 
 on:
   push:
-  pull_request:
+    branches:
+      - homolog
+      - main
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
 
 jobs:
@@ -34,44 +36,32 @@ jobs:
       - name: Docker build
         run: docker build -t task2-fabri-ci .
 
-  merge-pull-request:
+  open-pull-request:
     needs: integrate
-    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
+    if: github.ref == 'refs/heads/homolog'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Open and merge pull request
+      - name: Open pull request
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          BRANCH: ${{ github.ref_name }}
         run: |
-          PR_NUMBER="$(gh pr list --head "$BRANCH" --base main --state open --json number --jq '.[0].number')"
+          AHEAD_BY="$(gh api "repos/$GH_REPO/compare/main...homolog" --jq .ahead_by)"
 
-          if [ -z "$PR_NUMBER" ]; then
-            PR_URL="$(gh pr create \
-              --base main \
-              --head "$BRANCH" \
-              --title "Atualiza $BRANCH" \
-              --body "Pull Request criado automaticamente apos aprovacao do CI.")"
-            PR_NUMBER="${PR_URL##*/}"
+          if [ "$AHEAD_BY" -eq 0 ]; then
+            echo "A branch homolog nao possui mudancas novas para a main."
+            exit 0
           fi
 
-          for attempt in $(seq 1 12); do
-            MERGEABLE="$(gh pr view "$PR_NUMBER" --json mergeable --jq .mergeable)"
+          PR_NUMBER="$(gh pr list --head homolog --base main --state open --json number --jq '.[0].number')"
 
-            if [ "$MERGEABLE" = "MERGEABLE" ]; then
-              gh pr merge "$PR_NUMBER" --merge --delete-branch
-              exit 0
-            fi
-
-            if [ "$MERGEABLE" = "CONFLICTING" ]; then
-              echo "Pull Request possui conflitos e nao sera mesclado."
-              exit 1
-            fi
-
-            sleep 5
-          done
-
-          echo "GitHub nao confirmou a possibilidade de merge no tempo esperado."
-          exit 1
+          if [ -z "$PR_NUMBER" ]; then
+            gh pr create \
+              --base main \
+              --head homolog \
+              --title "Promove homologacao para producao" \
+              --body "CI aprovado. Aguardando validacao manual em Homologacao antes do merge para main."
+          else
+            echo "A branch homolog ja possui o Pull Request #$PR_NUMBER aberto."
+          fi

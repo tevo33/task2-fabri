@@ -62,7 +62,8 @@ cd ~/task2-fabri
 ```
 
 O bootstrap instala Git, Docker e Docker Compose e clona o projeto.
-O deploy de producao exige que o mesmo commit ja tenha sido aplicado em homologacao.
+Homologacao usa a branch `homolog` e Producao usa a branch `main`.
+O deploy de Producao exige que a `main` contenha o commit validado em Homologacao.
 
 Documentos auxiliares da entrega final:
 
