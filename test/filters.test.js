@@ -14,7 +14,7 @@ test('normalizeFilters retorna filtros vazios por padrao', () => {
     situacao: '',
   });
 });
-
+var teste = "";
 // mantem filtro valido
 test('normalizeFilters preserva filtros validos', () => {
   assert.deepEqual(normalizeFilters({
