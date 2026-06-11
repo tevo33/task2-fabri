@@ -8,7 +8,7 @@ test('generateLancamentosPdf retorna um buffer PDF', async () => {
     lancamentos: [],
     filters: {},
   });
-
+  
   assert.equal(Buffer.isBuffer(buffer), true);
   assert.equal(buffer.subarray(0, 4).toString(), '%PDF');
 });
